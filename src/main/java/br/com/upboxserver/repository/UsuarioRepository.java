@@ -112,6 +112,7 @@ public class UsuarioRepository {
         Usuario usuarioAntigo = collection.findOneAndUpdate(filter, uptade);
         logger.log(Level.INFO, "Atualizado: {0}", usuarioAntigo.getUsername());
         Document document = populaJsonString(usuario);
+        client.close();
         return document.toJson();
     }
 
