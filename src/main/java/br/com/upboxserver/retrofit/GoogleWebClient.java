@@ -11,7 +11,7 @@ public class GoogleWebClient {
     private static final String SECRET = "6LcsQqoUAAAAAOUsBLwlQWKiRvZyHXLuJLIWpNqP";
 
     public boolean verifica(String recaptcha) throws IOException {
-        Call<Resposta> token = new RetrofitInitializer().getGoogleService().enviaToken(SECRET, recaptcha);
+        Call<Resposta> token = new RetrofitInitializer("https://www.google.com/recaptcha/api/", Tipo.GOOGLE).getGoogleService().enviaToken(SECRET, recaptcha);
         return token.execute().body().isSuccess();
     }
 }

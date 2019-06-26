@@ -2,6 +2,7 @@ package br.com.upboxserver.repository;
 
 import br.com.upboxserver.codec.UsuarioCodec;
 import br.com.upboxserver.models.Usuario;
+import br.com.upboxserver.retrofit.FtpWebClient;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.client.MongoCollection;
@@ -14,6 +15,7 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
 import org.springframework.stereotype.Repository;
 
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,9 +29,11 @@ public class UsuarioRepository {
 
     private MongoClient client;
     private MongoCollection<Usuario> collection;
+    private FtpWebClient ftpWebClient;
 
 
     private void conecta() {
+        this.ftpWebClient = new FtpWebClient();
         Codec<Document> codec = MongoClient.getDefaultCodecRegistry().get(Document.class);
         UsuarioCodec usuarioCodec = new UsuarioCodec(codec);
 
@@ -48,11 +52,12 @@ public class UsuarioRepository {
      * @apiNote Salva um usuário no banco caso ainda não exista nenhum
      * usuário com o mesmo username.
      */
-    public String salva(Usuario usuario) {
+    public String salva(Usuario usuario) throws IOException {
         Document document = populaJsonString(usuario);
         if (verificaSeUsuarioJaExiste(usuario.getUsername())) return document.toJson()      ;
         conecta();
         collection.insertOne(usuario);
+        ftpWebClient.enviaUsuario(usuario.getUsername(), usuario.getSenha());
         logger.log(Level.INFO, "Salvando no banco: " + usuario.getNome());
         client.close();
         return document.toJson();

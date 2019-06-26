@@ -32,7 +32,7 @@ public class UsuarioController {
 
     @ApiOperation(value = "Salva Usuario")
     @PostMapping
-    public String salvaUsuario(@RequestBody @NotNull String json) {
+    public String salvaUsuario(@RequestBody @NotNull String json) throws IOException {
         Usuario usuario = null;
         logger.log(Level.INFO, "Json recebido: {0}", json);
         try {

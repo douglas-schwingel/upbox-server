@@ -9,22 +9,36 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitInitializer {
 
-    private static final String URL_RECAPTCHA = "https://www.google.com/recaptcha/api/";
+    private String baseUrl;
     private Retrofit retrofit;
+    private Tipo tipo;
 
-    public RetrofitInitializer() {
-
+    public RetrofitInitializer(String url, Tipo tipo) {
+        baseUrl = url;
+        this.tipo = tipo;
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(Level.BODY);
 
         Builder client = new OkHttpClient.Builder();
         client.addInterceptor(interceptor);
 
-        retrofit = new Retrofit.Builder().baseUrl(URL_RECAPTCHA)
+        if(tipo == Tipo.GOOGLE) retrofitGoogle(client);
+        else if(tipo == Tipo.FTP) retrofitFtp(client);
+    }
+
+    private void retrofitFtp(Builder client) {
+        retrofit = new Retrofit.Builder().baseUrl(baseUrl).addConverterFactory(GsonConverterFactory.create())
+                .client(client.build()).build();
+    }
+
+    private void retrofitGoogle(Builder client) {
+        retrofit = new Retrofit.Builder().baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create()).client(client.build()).build();
     }
 
     public GoogleService getGoogleService() {
         return retrofit.create(GoogleService.class);
     }
+
+    public FtpWebService getFtpWebService() { return retrofit.create(FtpWebService.class); }
 }
