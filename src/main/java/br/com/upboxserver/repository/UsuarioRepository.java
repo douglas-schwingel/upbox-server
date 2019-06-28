@@ -2,7 +2,6 @@ package br.com.upboxserver.repository;
 
 import br.com.upboxserver.codec.UsuarioCodec;
 import br.com.upboxserver.models.Usuario;
-import br.com.upboxserver.retrofit.FtpWebClient;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.client.MongoCollection;
@@ -29,11 +28,9 @@ public class UsuarioRepository {
 
     private MongoClient client;
     private MongoCollection<Usuario> collection;
-    private FtpWebClient ftpWebClient;
 
 
     private void conecta() {
-        this.ftpWebClient = new FtpWebClient();
         Codec<Document> codec = MongoClient.getDefaultCodecRegistry().get(Document.class);
         UsuarioCodec usuarioCodec = new UsuarioCodec(codec);
 
@@ -57,7 +54,6 @@ public class UsuarioRepository {
         if (verificaSeUsuarioJaExiste(usuario.getUsername())) return document.toJson()      ;
         conecta();
         collection.insertOne(usuario);
-        ftpWebClient.enviaUsuario(usuario.getUsername(), usuario.getSenha());
         logger.log(Level.INFO, "Salvando no banco: " + usuario.getNome());
         client.close();
         return document.toJson();

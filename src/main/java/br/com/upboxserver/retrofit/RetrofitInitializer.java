@@ -22,8 +22,7 @@ public class RetrofitInitializer {
         Builder client = new OkHttpClient.Builder();
         client.addInterceptor(interceptor);
 
-        if(tipo == Tipo.GOOGLE) retrofitGoogle(client);
-        else if(tipo == Tipo.FTP) retrofitFtp(client);
+        retrofitGoogle(client);
     }
 
     private void retrofitFtp(Builder client) {
@@ -40,5 +39,4 @@ public class RetrofitInitializer {
         return retrofit.create(GoogleService.class);
     }
 
-    public FtpWebService getFtpWebService() { return retrofit.create(FtpWebService.class); }
 }
