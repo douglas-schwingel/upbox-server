@@ -2,11 +2,12 @@ package br.com.upboxserver.repository;
 
 import br.com.upboxserver.codec.UsuarioCodec;
 import br.com.upboxserver.models.Usuario;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
+import com.mongodb.*;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.bson.codecs.Codec;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -15,6 +16,9 @@ import org.bson.conversions.Bson;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,6 +29,7 @@ public class UsuarioRepository {
     private static final String PARAM_BUSCA = "username";
     private static final String URL_MONGO = "localhost:27017";
     private static final String MONGO_DB = "upbox";
+    public static final String COMPARTILHADOS_COMIGO = "compartilhadosComigo";
 
     private MongoClient client;
     private MongoCollection<Usuario> collection;
@@ -116,7 +121,7 @@ public class UsuarioRepository {
         client.close();
         return document.toJson();
     }
-
+//
     /**
      *
      * @param nomeArquivo
@@ -127,7 +132,27 @@ public class UsuarioRepository {
      */
 
     public boolean compartilha(String nomeArquivo, String owner, String destinatario) {
+        BasicDBObject basicDBObject = new BasicDBObject();
+        basicDBObject.put("owner", owner);
+        basicDBObject.put("arquivo", nomeArquivo);
+        BasicDBObject username = new BasicDBObject("username", destinatario);
+        username.put(COMPARTILHADOS_COMIGO, basicDBObject);
+        System.out.println(username.toJson());
+        conecta();
+        MongoCursor<Usuario> cursor = collection.find(username).iterator();
+        if (cursor.hasNext()) {
+            return false;
+        }
 
+        if (owner.equals(destinatario)) {
+            return false;
+        }
+        Document document = new Document(COMPARTILHADOS_COMIGO, basicDBObject);
+        Bson filter = new Document("username", destinatario);
+        Document update = new Document("$push", document);
+        UpdateResult updateResult = collection.updateOne(filter, update);
+        client.close();
+        return updateResult != null;
     }
 
     private Document verificaDadosParaAtualizacao(Usuario usuario) {
@@ -139,7 +164,8 @@ public class UsuarioRepository {
         if (usuario.getEmail() != null) document.put("email", usuario.getEmail());
         if (usuario.getSenha() != null) document.put("senha", usuario.getSenha());
         if (usuario.getId() != null) document.put("_id", usuario.getId());
-//        if (usuario.getDataNascimento() != null) document.put("dataNascimento", usuario.getDataNascimento());
+        if (usuario.getArquivosCompartilhados() != null)
+            document.put("compartilhadosComigo", usuario.getArquivosCompartilhados());
         return new Document("$set", document);
     }
 
@@ -153,6 +179,7 @@ public class UsuarioRepository {
         document.put("username", usuario.getUsername());
         document.put("senha", usuario.getSenha());
         document.put("uuid", usuario.getUuid().toString());
+        document.put("compartilhadosComigo", usuario.getArquivosCompartilhados());
         return document;
     }
     private boolean verificaSeUsuarioJaExiste(String username) {

@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
@@ -59,8 +60,19 @@ public class UsuarioController {
 
     @ApiOperation(value = "Atualiza Usuario")
     @PatchMapping("/{username}")
-    public String atualizaUsuario(@NotNull@PathVariable("username") String username,
-                                @RequestBody @NotNull Usuario usuario) {return repository.atualiza(username, usuario);}
+    public String atualizaUsuario(@NotNull @PathVariable("username") String username,
+                                  @RequestBody @NotNull Usuario usuario) {
+        return repository.atualiza(username, usuario);
+    }
 
+    @ApiOperation(value="Compartilha Arquivo", tags = "Arquivo")
+    @PostMapping("/compartilha")
+    public ModelAndView compartilhaArquivo(@NotNull @RequestParam("nomeArquivo") String nomeArquivo,
+                                     @NotNull @RequestParam("owner") String owner,
+                                     @NotNull @RequestParam("destinatario") String destinatario) {
+        ModelAndView view = new ModelAndView("redirect:http://localhost:8080/usuario/" + owner);
+        repository.compartilha(nomeArquivo, owner, destinatario);
+        return view;
+    }
 
 }

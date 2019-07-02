@@ -2,6 +2,7 @@ package br.com.upboxserver.codec;
 
 import br.com.upboxserver.exception.UsuarioException;
 import br.com.upboxserver.models.Usuario;
+import com.mongodb.BasicDBObject;
 import org.bson.*;
 import org.bson.codecs.Codec;
 import org.bson.codecs.CollectibleCodec;
@@ -9,6 +10,9 @@ import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class UsuarioCodec implements CollectibleCodec<Usuario> {
@@ -55,10 +59,9 @@ public class UsuarioCodec implements CollectibleCodec<Usuario> {
         usuario.setUuid(UUID.fromString(document.getString("uuid")));
         usuario.setNome(document.getString("nome"));
         usuario.setEmail(document.getString("email"));
-//        Instant dataInstant = document.getDate("dataNascimento").toInstant();
-//        usuario.setDataNascimento(LocalDate.ofInstant(dataInstant, ZoneId.systemDefault()));
         usuario.setUsername(document.getString("username"));
         usuario.setSenha(document.getString("senha"));
+        usuario.setArquivosCompartilhados(new HashSet<>((List<BasicDBObject>)document.get("compartilhadosComigo")));
         return usuario;
     }
 
@@ -69,7 +72,7 @@ public class UsuarioCodec implements CollectibleCodec<Usuario> {
         document.put("nome", usuario.getNome());
         document.put("email", usuario.getEmail());
         document.put("username", usuario.getUsername());
-//        document.put("dataNascimento", usuario.getDataNascimento());
+        document.put("compartilhadosComigo", usuario.getArquivosCompartilhados());
         String salto = BCrypt.gensalt();
         String senhaHash = BCrypt.hashpw(usuario.getSenha(), salto);
         document.put("senha", senhaHash);

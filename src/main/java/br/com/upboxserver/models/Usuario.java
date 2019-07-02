@@ -2,11 +2,12 @@ package br.com.upboxserver.models;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.mongodb.BasicDBObject;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.UUID;
+import java.util.*;
 
 @Document
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -18,10 +19,17 @@ public class Usuario {
     private UUID uuid;
     private String nome;
     private String email;
-//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-//    private LocalDate dataNascimento;
     private String username;
     private String senha;
+    private Set<BasicDBObject> arquivosCompartilhados = new HashSet<>();
+
+    public Set<BasicDBObject> getArquivosCompartilhados() {
+        return arquivosCompartilhados;
+    }
+
+    public void setArquivosCompartilhados(Set<BasicDBObject> arquivosCompartilhados) {
+        this.arquivosCompartilhados = arquivosCompartilhados;
+    }
 
     public ObjectId getId() {
         return id;
@@ -46,15 +54,6 @@ public class Usuario {
     public void setEmail(String email) {
         this.email = email;
     }
-
-
-//    public LocalDate getDataNascimento() {
-//        return dataNascimento;
-//    }
-//
-//    public void setDataNascimento(LocalDate dataNascimento) {
-//        this.dataNascimento = dataNascimento;
-//    }
 
     public String getUsername() {
         return username;
