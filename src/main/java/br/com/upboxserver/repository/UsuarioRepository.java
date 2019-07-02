@@ -117,6 +117,19 @@ public class UsuarioRepository {
         return document.toJson();
     }
 
+    /**
+     *
+     * @param nomeArquivo
+     * @param owner
+     * @param destinatario
+     * @return True se a operação foi bem sucedida e false se houve um erro
+     * @apiNote Salva no banco se um arquivo foi compartilhado
+     */
+
+    public boolean compartilha(String nomeArquivo, String owner, String destinatario) {
+
+    }
+
     private Document verificaDadosParaAtualizacao(Usuario usuario) {
         Document document = new Document();
 
