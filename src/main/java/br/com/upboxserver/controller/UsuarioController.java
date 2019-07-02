@@ -3,6 +3,7 @@ package br.com.upboxserver.controller;
 import br.com.upboxserver.models.Usuario;
 import br.com.upboxserver.repository.UsuarioRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.BasicDBObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,6 +23,7 @@ import java.util.logging.Logger;
 @RequestMapping("/usuario")
 public class UsuarioController {
     private static final Logger logger = Logger.getLogger(UsuarioController.class.getName());
+    public static final String REDIRECT_CLIENT = "redirect:http://localhost:8080/usuario/";
 
     @Autowired
     private UsuarioRepository repository;
@@ -70,8 +73,17 @@ public class UsuarioController {
     public ModelAndView compartilhaArquivo(@NotNull @RequestParam("nomeArquivo") String nomeArquivo,
                                      @NotNull @RequestParam("owner") String owner,
                                      @NotNull @RequestParam("destinatario") String destinatario) {
-        ModelAndView view = new ModelAndView("redirect:http://localhost:8080/usuario/" + owner);
+        ModelAndView view = new ModelAndView(REDIRECT_CLIENT + owner);
         repository.compartilha(nomeArquivo, owner, destinatario);
+        return view;
+    }
+
+//    TODO testar a listagem de arquivos compartilhados
+    @PostMapping("/compartilhados")
+    public ModelAndView listaCompartilhados(@NotNull @ModelAttribute("username") String username) {
+        ModelAndView view = new ModelAndView(REDIRECT_CLIENT + "compartilhados" + username);
+        Set<BasicDBObject> compartilhados = repository.listaCompartilhadosComigo(username);
+        view.addObject("lista", compartilhados);
         return view;
     }
 
