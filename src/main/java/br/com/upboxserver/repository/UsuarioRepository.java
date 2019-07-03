@@ -16,6 +16,8 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,7 +32,7 @@ public class UsuarioRepository {
     private static final String PARAM_BUSCA = "username";
     private static final String URL_MONGO = "localhost:27017";
     private static final String MONGO_DB = "upbox";
-    public static final String COMPARTILHADOS_COMIGO = "compartilhadosComigo";
+    private static final String COMPARTILHADOS_COMIGO = "compartilhadosComigo";
 
     private MongoClient client;
     private MongoCollection<Usuario> collection;
@@ -208,13 +210,13 @@ public class UsuarioRepository {
         return false;
     }
 
-    public Set<BasicDBObject> listaCompartilhadosComigo(String username) {
-        conecta();
-        MongoCursor<Usuario> cursor = collection.find(Filters.eq(PARAM_BUSCA, username), Usuario.class).iterator();
-        if (cursor.hasNext()) {
-            Usuario usuario = cursor.next();
-            return usuario.getArquivosCompartilhados();
-        }
-        return null;
-    }
+//    public Set<BasicDBObject> listaCompartilhadosComigo(String username) {
+//        conecta();
+//        MongoCursor<Usuario> cursor = collection.find(Filters.eq(PARAM_BUSCA, username), Usuario.class).iterator();
+//        if (cursor.hasNext()) {
+//            Usuario usuario = cursor.next();
+//            return usuario.getArquivosCompartilhados();
+//        }
+//        return new HashSet<>();
+//    }
 }

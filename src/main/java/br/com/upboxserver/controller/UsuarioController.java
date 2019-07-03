@@ -13,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,7 +47,7 @@ public class UsuarioController {
             e.printStackTrace();
 
         }
-        return repository.salva(usuario);
+            return repository.salva(usuario);
     }
 
     @ApiOperation(value = "Remove Usuario")
@@ -78,13 +79,10 @@ public class UsuarioController {
         return view;
     }
 
-//    TODO testar a listagem de arquivos compartilhados
-    @PostMapping("/compartilhados")
-    public ModelAndView listaCompartilhados(@NotNull @ModelAttribute("username") String username) {
-        ModelAndView view = new ModelAndView(REDIRECT_CLIENT + "compartilhados" + username);
-        Set<BasicDBObject> compartilhados = repository.listaCompartilhadosComigo(username);
-        view.addObject("lista", compartilhados);
-        return view;
-    }
+//    @PostMapping("/compartilhados")
+//    public OutputStream listaCompartilhados(@NotNull @ModelAttribute("username") String username) {
+//        Set<BasicDBObject> compartilhados = repository.listaCompartilhadosComigo(username);
+//        return compartilhados.stream().;
+//    }
 
 }
