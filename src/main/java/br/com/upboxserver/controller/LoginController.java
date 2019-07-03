@@ -32,11 +32,8 @@ public class LoginController {
     public String login(@ModelAttribute("usuario") Usuario usuario, RedirectAttributes redirect,
                         HttpSession session, HttpServletRequest request) throws IOException {
         String recaptcha = request.getParameter("g-recaptcha-response");
-        boolean recaptchaValido = client.verifica(recaptcha);
+        client.verifica(recaptcha);
 
-        if(recaptchaValido) {
-
-        }
         return "";
     }
 

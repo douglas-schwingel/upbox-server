@@ -3,7 +3,6 @@ package br.com.upboxserver.controller;
 import br.com.upboxserver.models.Usuario;
 import br.com.upboxserver.repository.UsuarioRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.BasicDBObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +12,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,8 +41,7 @@ public class UsuarioController {
             usuario = new ObjectMapper().readValue(json, Usuario.class);
             logger.log(Level.INFO, "Usuario mapeado: {0}", usuario.getUsername());
         } catch (IOException e) {
-            e.printStackTrace();
-
+            logger.log(Level.WARNING, "Erro ao salvar usuario {0}", usuario.getUsername());
         }
             return repository.salva(usuario);
     }
@@ -57,7 +53,7 @@ public class UsuarioController {
         try {
             usuario = new ObjectMapper().readValue(json, Usuario.class);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Erro ao deletar usuario {0}", usuario.getUsername());
         }
         return repository.remove(usuario);
     }
@@ -78,11 +74,5 @@ public class UsuarioController {
         repository.compartilha(nomeArquivo, owner, destinatario);
         return view;
     }
-
-//    @PostMapping("/compartilhados")
-//    public OutputStream listaCompartilhados(@NotNull @ModelAttribute("username") String username) {
-//        Set<BasicDBObject> compartilhados = repository.listaCompartilhadosComigo(username);
-//        return compartilhados.stream().;
-//    }
 
 }

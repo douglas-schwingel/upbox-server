@@ -11,11 +11,9 @@ public class RetrofitInitializer {
 
     private String baseUrl;
     private Retrofit retrofit;
-    private Tipo tipo;
 
-    public RetrofitInitializer(String url, Tipo tipo) {
+    public RetrofitInitializer(String url) {
         baseUrl = url;
-        this.tipo = tipo;
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(Level.BODY);
 
@@ -23,11 +21,6 @@ public class RetrofitInitializer {
         client.addInterceptor(interceptor);
 
         retrofitGoogle(client);
-    }
-
-    private void retrofitFtp(Builder client) {
-        retrofit = new Retrofit.Builder().baseUrl(baseUrl).addConverterFactory(GsonConverterFactory.create())
-                .client(client.build()).build();
     }
 
     private void retrofitGoogle(Builder client) {

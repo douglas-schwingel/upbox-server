@@ -16,9 +16,6 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,7 +26,7 @@ import java.util.logging.Logger;
 @Repository
 public class UsuarioRepository {
     private static final Logger logger = Logger.getLogger(UsuarioRepository.class.getName());
-    private static final String PARAM_BUSCA = "username";
+    private static final String USERNAME = "username";
     private static final String URL_MONGO = "localhost:27017";
     private static final String MONGO_DB = "upbox";
     private static final String COMPARTILHADOS_COMIGO = "compartilhadosComigo";
@@ -59,7 +56,7 @@ public class UsuarioRepository {
      */
     public String salva(Usuario usuario) {
         Document document = populaJsonString(usuario);
-        if (verificaSeUsuarioJaExiste(usuario.getUsername())) return document.toJson()      ;
+        if (verificaSeUsuarioJaExiste(usuario.getUsername())) return document.toJson();
         conecta();
         collection.insertOne(usuario);
         logger.log(Level.INFO, "Salvando no banco: " + usuario.getNome());
@@ -74,7 +71,7 @@ public class UsuarioRepository {
      */
     public String busca(String username) {
         conecta();
-        MongoCursor<Usuario> cursor = collection.find(Filters.eq(PARAM_BUSCA, username), Usuario.class).iterator();
+        MongoCursor<Usuario> cursor = collection.find(Filters.eq(USERNAME, username), Usuario.class).iterator();
         if (cursor.hasNext()) {
             Usuario resultado = cursor.next();
             client.close();
@@ -98,7 +95,7 @@ public class UsuarioRepository {
         }
         conecta();
         logger.log(Level.INFO, "Apagando usuário {0}", usuario.getUsername());
-        Usuario resultado = collection.findOneAndDelete(Filters.eq(PARAM_BUSCA, usuario.getUsername()));
+        Usuario resultado = collection.findOneAndDelete(Filters.eq(USERNAME, usuario.getUsername()));
         client.close();
         Document document = populaJsonString(resultado);
         return document.toJson();
@@ -116,7 +113,7 @@ public class UsuarioRepository {
             return null;
         }
         conecta();
-        Bson filter = new Document(PARAM_BUSCA, username);
+        Bson filter = new Document(USERNAME, username);
         Bson uptade = verificaDadosParaAtualizacao(usuario);
         Usuario usuarioAntigo = collection.findOneAndUpdate(filter, uptade);
         logger.log(Level.INFO, "Atualizado: {0}", usuarioAntigo.getUsername());
@@ -125,10 +122,10 @@ public class UsuarioRepository {
         return document.toJson();
     }
 //
+
     /**
-     *
-     * @param nomeArquivo - Nome do arquivo que será compartilhado
-     * @param owner - Dono do arquivo original
+     * @param nomeArquivo  - Nome do arquivo que será compartilhado
+     * @param owner        - Dono do arquivo original
      * @param destinatario - Username de com quem será compartilhado o arquivo
      * @return True se a operação foi bem sucedida e false se houve um erro
      * @apiNote Salva no banco se um arquivo foi compartilhado
@@ -138,7 +135,7 @@ public class UsuarioRepository {
         BasicDBObject basicDBObject = new BasicDBObject();
         basicDBObject.put("owner", owner);
         basicDBObject.put("arquivo", nomeArquivo);
-        BasicDBObject username = new BasicDBObject("username", destinatario);
+        BasicDBObject username = new BasicDBObject(USERNAME, destinatario);
         username.put(COMPARTILHADOS_COMIGO, basicDBObject);
         System.out.println(username.toJson());
         conecta();
@@ -151,7 +148,7 @@ public class UsuarioRepository {
             return false;
         }
         Document document = new Document(COMPARTILHADOS_COMIGO, basicDBObject);
-        Bson filter = new Document("username", destinatario);
+        Bson filter = new Document(USERNAME, destinatario);
         Document update = new Document("$push", document);
         UpdateResult updateResult = collection.updateOne(filter, update);
         client.close();
@@ -159,14 +156,13 @@ public class UsuarioRepository {
     }
 
     /**
-     *
      * @param usuario - usuario que será verificado
      * @return Um Document do Mongo com os dados verificados
      */
     private Document verificaDadosParaAtualizacao(Usuario usuario) {
         Document document = new Document();
 
-        if (usuario.getUsername() != null) document.put("username", usuario.getUsername());
+        if (usuario.getUsername() != null) document.put(USERNAME, usuario.getUsername());
         if (usuario.getUuid() != null) document.put("uuid", usuario.getUuid());
         if (usuario.getNome() != null) document.put("nome", usuario.getNome());
         if (usuario.getEmail() != null) document.put("email", usuario.getEmail());
@@ -181,7 +177,6 @@ public class UsuarioRepository {
     //    Métodos auxiliares
 
     /**
-     *
      * @param usuario - Usuario que será transformado em Json
      * @return Document com os dados do usuario que será trnsformado em Json
      */
@@ -189,7 +184,7 @@ public class UsuarioRepository {
         Document document = new Document();
         document.put("nome", usuario.getNome());
         document.put("email", usuario.getEmail());
-        document.put("username", usuario.getUsername());
+        document.put(USERNAME, usuario.getUsername());
         document.put("senha", usuario.getSenha());
         document.put("uuid", usuario.getUuid().toString());
         document.put(COMPARTILHADOS_COMIGO, usuario.getArquivosCompartilhados());
@@ -197,7 +192,6 @@ public class UsuarioRepository {
     }
 
     /**
-     *
      * @param username - username do usuario que será verificado no banco
      * @return true se já existir e false caso não exista
      */
@@ -210,13 +204,4 @@ public class UsuarioRepository {
         return false;
     }
 
-//    public Set<BasicDBObject> listaCompartilhadosComigo(String username) {
-//        conecta();
-//        MongoCursor<Usuario> cursor = collection.find(Filters.eq(PARAM_BUSCA, username), Usuario.class).iterator();
-//        if (cursor.hasNext()) {
-//            Usuario usuario = cursor.next();
-//            return usuario.getArquivosCompartilhados();
-//        }
-//        return new HashSet<>();
-//    }
 }
