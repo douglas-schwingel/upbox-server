@@ -17,11 +17,11 @@ import java.util.logging.Logger;
 
 
 @RestController
-@Api(tags = "Usuario", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@Api(tags = "Usuário", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
 @RequestMapping("/usuario")
 public class UsuarioController {
     private static final Logger logger = Logger.getLogger(UsuarioController.class.getName());
-    public static final String REDIRECT_CLIENT = "redirect:http://localhost:8080/usuario/";
+    private static final String REDIRECT_CLIENT = "redirect:http://localhost:8080/usuario/";
 
     @Autowired
     private UsuarioRepository repository;
@@ -34,7 +34,7 @@ public class UsuarioController {
 
     @ApiOperation(value = "Salva Usuario")
     @PostMapping
-    public String salvaUsuario(@RequestBody @NotNull String json) throws IOException {
+    public String salvaUsuario(@RequestBody @NotNull String json) {
         Usuario usuario = null;
         logger.log(Level.INFO, "Json recebido: {0}", json);
         try {
@@ -48,10 +48,10 @@ public class UsuarioController {
 
     @ApiOperation(value = "Remove Usuario")
     @DeleteMapping
-    public String removeUsuario(@RequestBody @NotNull String json) {
+    public String removeUsuario(@RequestBody @NotNull String usuarioJson) {
         Usuario usuario = null;
         try {
-            usuario = new ObjectMapper().readValue(json, Usuario.class);
+            usuario = new ObjectMapper().readValue(usuarioJson, Usuario.class);
         } catch (IOException e) {
             logger.log(Level.WARNING, "Erro ao deletar usuario {0}", usuario.getUsername());
         }
@@ -65,7 +65,7 @@ public class UsuarioController {
         return repository.atualiza(username, usuario);
     }
 
-    @ApiOperation(value="Compartilha Arquivo", tags = "Arquivo")
+    @ApiOperation(value="Compartilha Arquivo com Usuario")
     @PostMapping("/compartilha")
     public ModelAndView compartilhaArquivo(@NotNull @RequestParam("nomeArquivo") String nomeArquivo,
                                      @NotNull @RequestParam("owner") String owner,
