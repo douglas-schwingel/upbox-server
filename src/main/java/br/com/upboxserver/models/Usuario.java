@@ -2,12 +2,13 @@ package br.com.upboxserver.models;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.mongodb.BasicDBObject;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Document
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -21,13 +22,13 @@ public class Usuario {
     private String email;
     private String username;
     private String senha;
-    private Set<BasicDBObject> arquivosCompartilhados = new HashSet<>();
+    private List<org.bson.Document> arquivosCompartilhados = new ArrayList<>();
 
-    public Set<BasicDBObject> getArquivosCompartilhados() {
+    public List<org.bson.Document> getArquivosCompartilhados() {
         return arquivosCompartilhados;
     }
 
-    public void setArquivosCompartilhados(Set<BasicDBObject> arquivosCompartilhados) {
+    public void setArquivosCompartilhados(List<org.bson.Document> arquivosCompartilhados) {
         this.arquivosCompartilhados = arquivosCompartilhados;
     }
 

@@ -76,6 +76,7 @@ public class UsuarioRepository {
             Usuario resultado = cursor.next();
             client.close();
             Document document = populaJsonString(resultado);
+            logger.log(Level.INFO, "Usuario retornado do busca: {0}", document.toJson());
             return document.toJson();
         }
         logger.log(Level.INFO, "Usuário {0} não encontrado", username);
