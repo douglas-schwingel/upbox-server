@@ -23,6 +23,15 @@ public class Usuario {
     private String username;
     private String senha;
     private List<org.bson.Document> arquivosCompartilhados = new ArrayList<>();
+    private List<org.bson.Document> comparilheiCom = new ArrayList<>();
+
+    public List<org.bson.Document> getComparilheiCom() {
+        return comparilheiCom;
+    }
+
+    public void setComparilheiCom(List<org.bson.Document> comparilheiCom) {
+        this.comparilheiCom = comparilheiCom;
+    }
 
     public List<org.bson.Document> getArquivosCompartilhados() {
         return arquivosCompartilhados;

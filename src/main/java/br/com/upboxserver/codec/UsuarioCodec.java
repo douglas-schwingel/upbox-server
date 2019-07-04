@@ -59,6 +59,7 @@ public class UsuarioCodec implements CollectibleCodec<Usuario> {
         usuario.setUsername(document.getString("username"));
         usuario.setSenha(document.getString("senha"));
         usuario.setArquivosCompartilhados((List<Document>) document.get("compartilhadosComigo"));
+        usuario.setComparilheiCom((List<Document>)document.get("compartilheiCom"));
         return usuario;
     }
 
@@ -70,6 +71,7 @@ public class UsuarioCodec implements CollectibleCodec<Usuario> {
         document.put("email", usuario.getEmail());
         document.put("username", usuario.getUsername());
         document.put("compartilhadosComigo", usuario.getArquivosCompartilhados());
+        document.put("compartilheiCom", usuario.getComparilheiCom());
         String salto = BCrypt.gensalt();
         String senhaHash = BCrypt.hashpw(usuario.getSenha(), salto);
         document.put("senha", senhaHash);

@@ -75,4 +75,13 @@ public class UsuarioController {
         return view;
     }
 
+    @PostMapping("/parar_compartilhamento")
+    public ModelAndView pararCompartilhamento(@RequestParam("nomeArquivo")String nomeArquivo,
+                                              @RequestParam("owner")String owner,
+                                              @RequestParam("destinatario")String destinatario) {
+        ModelAndView view = new ModelAndView(REDIRECT_CLIENT + owner);
+        repository.paraCompartilhamento(nomeArquivo, owner, destinatario);
+        return view;
+    }
+
 }

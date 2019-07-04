@@ -30,6 +30,9 @@ public class UsuarioRepository {
     private static final String URL_MONGO = "localhost:27017";
     private static final String MONGO_DB = "upbox";
     private static final String COMPARTILHADOS_COMIGO = "compartilhadosComigo";
+    private static final String COMPARTILHEI_COM = "compartilheiCom";
+    private static final String PUSH = "$push";
+    private static final String PULL = "$pull";
 
     private MongoClient client;
     private MongoCollection<Usuario> collection;
@@ -132,28 +135,35 @@ public class UsuarioRepository {
      * @apiNote Salva no banco se um arquivo foi compartilhado
      */
 
-    public boolean compartilha(String nomeArquivo, String owner, String destinatario) {
-        BasicDBObject basicDBObject = new BasicDBObject();
-        basicDBObject.put("owner", owner);
-        basicDBObject.put("arquivo", nomeArquivo);
-        BasicDBObject username = new BasicDBObject(USERNAME, destinatario);
-        username.put(COMPARTILHADOS_COMIGO, basicDBObject);
-        System.out.println(username.toJson());
-        conecta();
-        MongoCursor<Usuario> cursor = collection.find(username).iterator();
-        if (cursor.hasNext()) {
-            return false;
-        }
+    public void compartilha(String nomeArquivo, String owner, String destinatario) {
+        BasicDBObject basicDBObject = criaObjetoSimples(nomeArquivo, owner);
+        BasicDBObject listaDestinatario = criaListaDeObjetos(destinatario, basicDBObject);
 
-        if (owner.equals(destinatario)) {
-            return false;
+        BasicDBObject objetoCompartilhei = criaObjetoSimplesCompartilhei(nomeArquivo, destinatario);
+
+        System.out.println(listaDestinatario.toJson());
+        conecta();
+        if (!verificaSeJaExiste(owner, destinatario, listaDestinatario)) {
+            fazUpdate(PUSH, destinatario, basicDBObject, COMPARTILHADOS_COMIGO);
+            fazUpdate(PUSH, owner, objetoCompartilhei, COMPARTILHEI_COM);
         }
-        Document document = new Document(COMPARTILHADOS_COMIGO, basicDBObject);
-        Bson filter = new Document(USERNAME, destinatario);
-        Document update = new Document("$push", document);
-        UpdateResult updateResult = collection.updateOne(filter, update);
         client.close();
-        return updateResult != null;
+    }
+
+    public void paraCompartilhamento(String nomeArquivo, String owner, String destinatario) {
+        BasicDBObject objetoCompartilhado = criaObjetoSimples(nomeArquivo, owner);
+        BasicDBObject objetoCompartilhei = criaObjetoSimplesCompartilhei(nomeArquivo, destinatario);
+        conecta();
+        fazUpdate(PULL, destinatario, objetoCompartilhado, COMPARTILHADOS_COMIGO);
+        fazUpdate(PULL, owner, objetoCompartilhei, COMPARTILHEI_COM);
+        client.close();
+    }
+
+//    Métodos auxiliares
+
+    private boolean verificaSeJaExiste(String owner, String destinatario, BasicDBObject objetoParaComparacao) {
+        MongoCursor<Usuario> cursor = collection.find(objetoParaComparacao).iterator();
+        return (cursor.hasNext() || owner.equals(destinatario));
     }
 
     /**
@@ -169,13 +179,16 @@ public class UsuarioRepository {
         if (usuario.getEmail() != null) document.put("email", usuario.getEmail());
         if (usuario.getSenha() != null) document.put("senha", usuario.getSenha());
         if (usuario.getId() != null) document.put("_id", usuario.getId());
-        if (usuario.getArquivosCompartilhados() != null)
+        if (usuario.getArquivosCompartilhados() != null) {
             document.put(COMPARTILHADOS_COMIGO, usuario.getArquivosCompartilhados());
+        }
+        if (usuario.getComparilheiCom() != null) {
+            document.put(COMPARTILHEI_COM, usuario.getComparilheiCom());
+        }
         return new Document("$set", document);
     }
 
 
-    //    Métodos auxiliares
 
     /**
      * @param usuario - Usuario que será transformado em Json
@@ -189,6 +202,7 @@ public class UsuarioRepository {
         document.put("senha", usuario.getSenha());
         document.put("uuid", usuario.getUuid().toString());
         document.put(COMPARTILHADOS_COMIGO, usuario.getArquivosCompartilhados());
+        document.put(COMPARTILHEI_COM, usuario.getComparilheiCom());
         return document;
     }
 
@@ -204,5 +218,33 @@ public class UsuarioRepository {
         }
         return false;
     }
+
+    private BasicDBObject criaListaDeObjetos(String destinatario, BasicDBObject basicDBObject) {
+        BasicDBObject username = new BasicDBObject(USERNAME, destinatario);
+        username.put(COMPARTILHADOS_COMIGO, basicDBObject);
+        return username;
+    }
+
+    private BasicDBObject criaObjetoSimples(String nomeArquivo, String owner) {
+        BasicDBObject basicDBObject = new BasicDBObject();
+        basicDBObject.put("owner", owner);
+        basicDBObject.put("arquivo", nomeArquivo);
+        return basicDBObject;
+    }
+
+    private BasicDBObject criaObjetoSimplesCompartilhei(String nomeArquivo, String destinatario) {
+        BasicDBObject basicDBObject = new BasicDBObject();
+        basicDBObject.put("destinatario", destinatario);
+        basicDBObject.put("arquivo", nomeArquivo);
+        return basicDBObject;
+    }
+
+    private UpdateResult fazUpdate(String tipo, String username, BasicDBObject basicDBObject, String compartilhamento) {
+        Document document = new Document(compartilhamento, basicDBObject);
+        Bson filter = new Document(USERNAME, username);
+        Document update = new Document(tipo, document);
+        return collection.updateOne(filter, update);
+    }
+
 
 }
