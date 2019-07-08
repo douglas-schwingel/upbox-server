@@ -31,11 +31,9 @@ public class UserService {
         return user;
     }
 
-    public User delete(User user) {
-        if (UserUtils.isValid(user)){
-            return repository.deleteByUsername(user.getUsername());
-        }
-        throw new InvalidUserException("Invalid user. Please, check the information and try again");
+    public User delete(String username) {
+        find(username);
+        return repository.deleteByUsername(username);
     }
 
     public User update(String userToBeUpdated, User user) {

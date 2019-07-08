@@ -43,7 +43,7 @@ public class UserController {
             @ApiResponse(code = 500, message = "Internal server error")
     })
     @GetMapping("/{username}")
-    public @NotNull User findUser(@PathVariable @NotNull String username) {
+    public @NotNull User findUser(@PathVariable("username") @NotNull String username) {
         return facade.find(username);
     }
 
@@ -54,9 +54,9 @@ public class UserController {
             @ApiResponse(code = 404, message = "User not found"),
             @ApiResponse(code = 500, message = "Internal server error")
     })
-    @DeleteMapping
-    public @NotNull User deleteUser(@RequestBody @NotNull User user) {
-        return facade.delete(user);
+    @DeleteMapping("/{username}")
+    public @NotNull User deleteUser(@PathVariable("username") @NotNull String username) {
+        return facade.delete(username);
     }
 
     @ApiOperation(value="Update user")

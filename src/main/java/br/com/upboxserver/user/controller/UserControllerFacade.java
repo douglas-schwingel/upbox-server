@@ -21,8 +21,8 @@ public class UserControllerFacade {
         return service.find(username);
     }
 
-    User delete(User user) {
-        return service.delete(user);
+    User delete(String username) {
+        return service.delete(username);
     }
 
     User update(String userToBeUpdated, User user) {
