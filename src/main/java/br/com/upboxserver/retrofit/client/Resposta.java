@@ -1,4 +1,4 @@
-package br.com.upboxserver.retrofit;
+package br.com.upboxserver.retrofit.client;
 
 public class Resposta {
     private boolean success;

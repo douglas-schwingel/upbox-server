@@ -1,17 +1,14 @@
 package br.com.upboxserver.upboxserver;
 
-import br.com.upboxserver.config.SwaggerConfig;
-import br.com.upboxserver.controller.UsuarioController;
-import br.com.upboxserver.repository.UsuarioRepository;
-import br.com.upboxserver.retrofit.GoogleWebClient;
-import br.com.upboxserver.service.UserService;
+import br.com.upboxserver.user.repository.UserRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @SpringBootApplication
-@ComponentScan(basePackageClasses = {SwaggerConfig.class, UsuarioController.class,
-		UsuarioRepository.class, GoogleWebClient.class, UserService.class})
+@EnableMongoRepositories(basePackageClasses = UserRepository.class)
+@ComponentScan("br.com.upboxserver")
 public class UpboxServerApplication {
 
 	public static void main(String[] args) {

@@ -1,5 +1,6 @@
-package br.com.upboxserver.retrofit;
+package br.com.upboxserver.retrofit.service;
 
+import br.com.upboxserver.retrofit.client.Resposta;
 import retrofit2.Call;
 import retrofit2.http.POST;
 import retrofit2.http.Query;

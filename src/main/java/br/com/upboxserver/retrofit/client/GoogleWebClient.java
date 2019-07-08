@@ -1,5 +1,6 @@
-package br.com.upboxserver.retrofit;
+package br.com.upboxserver.retrofit.client;
 
+import br.com.upboxserver.retrofit.config.RetrofitInitializer;
 import org.springframework.stereotype.Component;
 import retrofit2.Call;
 

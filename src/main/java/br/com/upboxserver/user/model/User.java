@@ -1,4 +1,4 @@
-package br.com.upboxserver.models;
+package br.com.upboxserver.user.model;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;

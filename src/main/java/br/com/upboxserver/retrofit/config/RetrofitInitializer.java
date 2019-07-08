@@ -1,5 +1,6 @@
-package br.com.upboxserver.retrofit;
+package br.com.upboxserver.retrofit.config;
 
+import br.com.upboxserver.retrofit.service.GoogleService;
 import okhttp3.OkHttpClient;
 import okhttp3.OkHttpClient.Builder;
 import okhttp3.logging.HttpLoggingInterceptor;
