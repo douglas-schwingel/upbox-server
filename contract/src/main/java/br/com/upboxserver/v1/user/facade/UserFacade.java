@@ -1,31 +1,31 @@
-package br.com.upboxserver.v1.controller;
+package br.com.upboxserver.v1.user.facade;
 
 import br.com.upboxserver.v1.user.model.User;
 import br.com.upboxserver.v1.user.service.UserService;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserControllerFacade {
+public class UserFacade {
 
     private UserService service;
 
-    public UserControllerFacade(UserService service) {
+    public UserFacade(UserService service) {
         this.service = service;
     }
 
-    User saveUser(User user) {
+    public User saveUser(User user) {
         return service.saveUser(user);
     }
 
-    User find(String username) {
+    public User find(String username) {
         return service.find(username);
     }
 
-    User delete(String username) {
+    public Long delete(String username) {
         return service.delete(username);
     }
 
-    User update(String userToBeUpdated, User user) {
-        return service.update(userToBeUpdated, user);
+    public User update(User user) {
+        return service.update(user);
     }
 }

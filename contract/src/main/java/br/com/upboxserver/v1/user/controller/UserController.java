@@ -1,23 +1,22 @@
-package br.com.upboxserver.v1.controller;
+package br.com.upboxserver.v1.user.controller;
 
+import br.com.upboxserver.v1.user.facade.UserFacade;
 import br.com.upboxserver.v1.user.model.User;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 
 @RestController
-@Api(tags = "User", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@Api(tags = "User", description = "User operations",
+        produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
 @RequestMapping("/v1/user")
 public class UserController {
 
-    private final UserControllerFacade facade;
+    private final UserFacade facade;
 
-    public UserController(UserControllerFacade facade) {
+    public UserController(UserFacade facade) {
         this.facade = facade;
     }
 
@@ -28,7 +27,8 @@ public class UserController {
             @ApiResponse(code = 500, message = "Internal server error")
     })
     @PostMapping
-    public @NotNull User saveUser(@RequestBody @NotNull User user) {
+    public @NotNull User saveUser(@RequestBody @NotNull
+                                      @ApiParam(value = "User to be saved", required = true) User user) {
         return facade.saveUser(user);
     }
 
@@ -41,10 +41,13 @@ public class UserController {
             @ApiResponse(code = 500, message = "Internal server error")
     })
     @GetMapping("/{username}")
-    public @NotNull User findUser(@PathVariable("username") @NotNull String username) {
+    public @NotNull User findUser(@PathVariable("username") @NotNull
+                                      @ApiParam(value = "Username of the user to be found", example = "silvajoao",
+                                              required = true) String username) {
         return facade.find(username);
     }
 
+//    TODO arrumar o retorno para LONG
     @ApiOperation(value="Delete user")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "User delete", response = User.class),
@@ -53,8 +56,11 @@ public class UserController {
             @ApiResponse(code = 500, message = "Internal server error")
     })
     @DeleteMapping("/{username}")
-    public @NotNull User deleteUser(@PathVariable("username") @NotNull String username) {
-        return facade.delete(username);
+    public @NotNull User deleteUser(@PathVariable("username") @NotNull
+                                        @ApiParam(value = "Username of the user to be removed", example = "silvajoao",
+                                                required = true)String username) {
+        facade.delete(username);
+        return null;
     }
 
     @ApiOperation(value="Update user")
@@ -64,10 +70,11 @@ public class UserController {
             @ApiResponse(code = 404, message = "User not found"),
             @ApiResponse(code = 500, message = "Internal server error")
     })
-    @PatchMapping("/{username}")
-    public @NotNull User updateUser(@PathVariable("username") String userToBeUpdated,
-                                    @RequestBody @NotNull User user) {
-        return facade.update(userToBeUpdated, user);
+    @PatchMapping()
+    public @NotNull User updateUser(@RequestBody @NotNull
+                                        @ApiParam(value = "User to be updated",
+                                                required = true) User user) {
+        return facade.update(user);
     }
 
 

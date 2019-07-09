@@ -1,11 +1,10 @@
 package br.com.upboxserver.v1.user.service;
 
+import br.com.upboxserver.v1.user.exception.InvalidUserException;
 import br.com.upboxserver.v1.user.exception.UserNotFoundException;
 import br.com.upboxserver.v1.user.model.User;
-import br.com.upboxserver.v1.user.exception.InvalidUserException;
 import br.com.upboxserver.v1.user.repository.UserRepository;
 import br.com.upboxserver.v1.user.util.UserUtils;
-import lombok.extern.log4j.Log4j;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -32,12 +31,16 @@ public class UserService {
         return user;
     }
 
-    public User delete(String username) {
+    public Long delete(String username) {
         find(username);
         return repository.deleteByUsername(username);
     }
 
-    public User update(String userToBeUpdated, User user) {
-        return null;
+    public User update(User user) {
+        User returned = repository.findByUsername(user.getUsername());
+        if(returned != null) {
+            return repository.save(user);
+        }
+        throw new UserNotFoundException("No user with such username. Please, verify the information and try again");
     }
 }
