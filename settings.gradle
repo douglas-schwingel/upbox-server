@@ -1,6 +1,6 @@
-pluginManagement {
-	repositories {
-		gradlePluginPortal()
-	}
-}
 rootProject.name = 'upbox-server'
+include 'contract'
+include 'app'
+include 'impl'
+include 'contract'
+
