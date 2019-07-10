@@ -3,6 +3,8 @@ package br.com.upboxserver.v1.user.controller;
 import br.com.upboxserver.v1.user.facade.UserFacade;
 import br.com.upboxserver.v1.user.model.User;
 import io.swagger.annotations.*;
+import lombok.NonNull;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,9 +28,10 @@ public class UserController {
             @ApiResponse(code = 403, message = "Method not allowed"),
             @ApiResponse(code = 500, message = "Internal server error")
     })
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public @NotNull User saveUser(@RequestBody @NotNull
-                                      @ApiParam(value = "User to be saved", required = true) User user) {
+                                      @ApiParam(value = "User to be saved", required = true) @NonNull User user) {
         return facade.saveUser(user);
     }
 
@@ -40,6 +43,7 @@ public class UserController {
             @ApiResponse(code = 404, message = "User not found"),
             @ApiResponse(code = 500, message = "Internal server error")
     })
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{username}")
     public @NotNull User findUser(@PathVariable("username") @NotNull
                                       @ApiParam(value = "Username of the user to be found", example = "silvajoao",
@@ -47,7 +51,6 @@ public class UserController {
         return facade.find(username);
     }
 
-//    TODO arrumar o retorno para LONG
     @ApiOperation(value="Delete user")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "User delete", response = User.class),
@@ -55,12 +58,12 @@ public class UserController {
             @ApiResponse(code = 404, message = "User not found"),
             @ApiResponse(code = 500, message = "Internal server error")
     })
+    @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{username}")
-    public @NotNull User deleteUser(@PathVariable("username") @NotNull
+    public @NotNull Long deleteUser(@PathVariable("username") @NotNull
                                         @ApiParam(value = "Username of the user to be removed", example = "silvajoao",
                                                 required = true)String username) {
-        facade.delete(username);
-        return null;
+        return facade.delete(username);
     }
 
     @ApiOperation(value="Update user")
@@ -70,6 +73,7 @@ public class UserController {
             @ApiResponse(code = 404, message = "User not found"),
             @ApiResponse(code = 500, message = "Internal server error")
     })
+    @ResponseStatus(HttpStatus.OK)
     @PatchMapping()
     public @NotNull User updateUser(@RequestBody @NotNull
                                         @ApiParam(value = "User to be updated",
