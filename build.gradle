@@ -7,39 +7,35 @@ buildscript {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:2.1.6.RELEASE"
         classpath "io.spring.gradle:dependency-management-plugin:1.0.8.RELEASE"
     }
-
 }
 
-apply plugin: 'java'
-apply plugin: 'application'
-
-application {
-    mainClassName = 'br.com.upboxserver.UpboxServerApplication'
-}
-
-allprojects {
+subprojects {
     apply plugin: 'java'
-    apply plugin: 'org.springframework.boot'
+    apply plugin: 'idea'
     apply plugin: 'io.spring.dependency-management'
 
+    dependencyManagement {
+        imports {
+            mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+        }
+    }
 
     group = 'br.com.upbox-server'
     version = '1.0.0-SNAPSHOT'
-    
     sourceCompatibility = '11'
 
     repositories {
-        mavenLocal()
         mavenCentral()
     }
 
     dependencies {
         implementation 'org.springframework.boot:spring-boot-starter-web'
         implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
         implementation 'io.springfox:springfox-swagger2:2.9.2'
         implementation 'io.springfox:springfox-swagger-ui:2.9.2'
-        testImplementation 'org.springframework.boot:spring-boot-starter-test'
         compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.8'
+        annotationProcessor 'org.projectlombok:lombok:1.18.8'
     }
 }
 
